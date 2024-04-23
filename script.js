@@ -1,7 +1,7 @@
 
 let modalQtd;
-
-
+let cart = []
+let modalKey = 0;
 
 //---------------------------------- EXIBE INFORMAÇÃO DAS PIZZAS ----------------------------------------//
 
@@ -24,6 +24,8 @@ pizzaJson.map((item, index) => {
         event.preventDefault();
 
         modalQtd = 1
+
+        modalKey = index;
 
         let key = event.target.closest('.pizza-item').getAttribute('data-key');
 
@@ -74,19 +76,19 @@ function closeModal() {
     }, 500)
 }
 
-document.querySelectorAll('.pizzaInfo--cancelButton, .pizzaInfo--cancelMobileButton').forEach((item)=>{
+document.querySelectorAll('.pizzaInfo--cancelButton, .pizzaInfo--cancelMobileButton').forEach((item) => {
     item.addEventListener('click', closeModal);
 });
 
 //---------------------------------- QUANTIDADE DE PIZZAS ----------------------------------------//
 
-document.querySelector('.pizzaInfo--qtmais').addEventListener('click', ()=>{
+document.querySelector('.pizzaInfo--qtmais').addEventListener('click', () => {
     modalQtd++;
 
     document.querySelector('.pizzaInfo--qt').innerHTML = modalQtd
 });
 
-document.querySelector('.pizzaInfo--qtmenos').addEventListener('click', ()=>{
+document.querySelector('.pizzaInfo--qtmenos').addEventListener('click', () => {
 
     document.querySelector('.pizzaInfo--qt').innerHTML = modalQtd
 
@@ -95,3 +97,39 @@ document.querySelector('.pizzaInfo--qtmenos').addEventListener('click', ()=>{
     }
 });
 
+document.querySelectorAll('.pizzaInfo--size').forEach((pizzaSize, position) => {
+
+    pizzaSize.addEventListener('click', (event) => {
+
+        document.querySelector('.pizzaInfo--size.selected').classList.remove('selected')
+
+        pizzaSize.classList.add('selected')
+
+    })
+})
+
+//---------------------------------- BOTÃO ADICIONAR AO CARRINHO ----------------------------------------//
+
+document.querySelector('.pizzaInfo--addButton').addEventListener('click', () => {
+
+    let size = parseInt(document.querySelector('.pizzaInfo--size.selected').getAttribute('data-key'));
+
+    let identifier = pizzaJson[modalKey].id + '@' + size;
+
+    let key = cart.findIndex((item) => {
+        return item.identifier == identifier
+    })
+
+    if (key >= 0) {
+        cart[key].qt += modalQtd;
+    } else {
+        cart.push({
+            identifier,
+            id: pizzaJson[modalKey].id,
+            size,
+            qt: modalQtd
+        })
+    }
+
+    //console.log(cart)
+});
